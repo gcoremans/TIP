@@ -117,6 +117,8 @@ object Tip extends App {
         | -constprop         enable constant propagation analysis
         | -interval          enable interval analysis
         | -copyconstprop     enable copy constant propagation analysis
+        | -uninitvars        enable possibly-uninitialized variables analysis
+        | -taint             enable taint analysis
         |
         | For the dataflow analyses, the choice of fixpoint solver can be chosen by these modifiers
         | immediately after the analysis name (default: use the simple fixpoint solver):
@@ -131,6 +133,7 @@ object Tip extends App {
         | csiwlrp  use the worklist solver with reachability and propagation, context-sensitive (with call string) interprocedural version
         | cfiwlrp  use the worklist solver with reachability and propagation, context-sensitive (with functional approach) interprocedural version
         | ide      use the IDE solver
+        | summary  use the summary solver
         |
         | e.g. -sign wl  will run the sign analysis using the basic worklist solver
         |
@@ -179,11 +182,15 @@ object Tip extends App {
           log.error(s"Failure parsing the program: $file", e)
           sys.exit(1)
         case Success(parsedNode: AProgram) =>
-          // run normalizer
-          log.verb("Normalizing")
-          val programNode = options.normalizer.normalizeProgram(parsedNode)
-          if (options.normalizer != NoNormalizer)
-            Output.output(file, OtherOutput(OutputKindE.normalized), programNode.toString, options.out)
+          val programNode =
+            if (options.normalizer == NoNormalizer) parsedNode
+            else {
+              // run normalizer
+              log.verb("Normalizing")
+              val p = options.normalizer.normalizeProgram(parsedNode)
+              Output.output(file, OtherOutput(OutputKindE.normalized), p.toString, options.out)
+              p
+            }
 
           // run declaration analysis
           // (for information about the use of 'implicit', see [[tip.analysis.TypeAnalysis]])
@@ -208,7 +215,7 @@ object Tip extends App {
                     // run the analysis
                     log.verb(s"Performing ${an.getClass.getSimpleName}")
                     val res = an.analyze().asInstanceOf[Map[CfgNode, _]]
-                    Output.output(file, DataFlowOutput(s), wcfg.toDot(Output.labeler(res), Output.dotIder), options.out)
+                    Output.output(file, DataFlowOutput(s), wcfg.toDot(Output.labeler(res, an.stateAfterNode), Output.dotIder), options.out)
                   }
                 }
             }
@@ -244,7 +251,7 @@ object Tip extends App {
                         Output.transform(res.asInstanceOf[Map[(CallContext, CfgNode), _]])
                       else
                         res.asInstanceOf[Map[CfgNode, _]]
-                    Output.output(file, DataFlowOutput(s), wcfg.toDot(Output.labeler(res2), Output.dotIder), options.out)
+                    Output.output(file, DataFlowOutput(s), wcfg.toDot(Output.labeler(res2, an.stateAfterNode), Output.dotIder), options.out)
                   }
                 }
             }
@@ -329,7 +336,7 @@ object Tip extends App {
           options.andersen = true
         case "-steensgaard" =>
           options.steensgaard = true
-        case "-sign" | "-livevars" | "-available" | "-vbusy" | "-reaching" | "-constprop" | "-interval" | "-copyconstprop" =>
+        case "-sign" | "-livevars" | "-available" | "-vbusy" | "-reaching" | "-constprop" | "-interval" | "-copyconstprop" | "-uninitvars" | "-taint" =>
           options.dfAnalysis += dfa.withName(args(i).drop(1)) -> {
             if (i + 1 < args.length && dfo.values.map(_.toString()).contains(args(i + 1))) {
               i = i + 1

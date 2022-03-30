@@ -1,12 +1,15 @@
 package tip.analysis
 
 import tip.ast.{AAssignStmt, AIdentifier, AProgram, AstNode, DepthFirstAstVisitor, _}
-import tip.solvers.CubicSolver
+import tip.solvers.SimpleCubicSolver
 import tip.util.Log
 import tip.ast.AstNodeData.{AstNodeWithDeclaration, DeclarationData}
 
 import scala.language.implicitConversions
 
+/**
+  * Control flow analysis.
+  */
 class ControlFlowAnalysis(program: AProgram)(implicit declData: DeclarationData)
     extends DepthFirstAstVisitor[Unit]
     with Analysis[Map[AstNode, Set[AFunDeclaration]]] {
@@ -18,13 +21,13 @@ class ControlFlowAnalysis(program: AProgram)(implicit declData: DeclarationData)
   }
 
   case class AstVariable(n: AstNode) {
-    override def toString = n match {
+    override def toString: String = n match {
       case fun: AFunDeclaration => s"${fun.name}:${fun.loc}"
       case _ => n.toString
     }
   }
 
-  private val solver = new CubicSolver[AstVariable, Decl]
+  private val solver = new SimpleCubicSolver[AstVariable, Decl]
 
   val allFunctions: Set[AFunDeclaration] = program.funs.toSet
 
@@ -46,7 +49,7 @@ class ControlFlowAnalysis(program: AProgram)(implicit declData: DeclarationData)
     * @param node the node for which it generates the constraints
     * @param arg unused for this visitor
     */
-  def visit(node: AstNode, arg: Unit) = {
+  def visit(node: AstNode, arg: Unit): Unit = {
 
     /**
       * Get the declaration if the supplied AstNode is an identifier,

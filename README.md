@@ -18,7 +18,7 @@ options are viable.
 
 - Install the Scala plugin in IntelliJ. (Follow the instructions on [how to install IntelliJ plugins](https://www.jetbrains.com/help/idea/installing-updating-and-uninstalling-repository-plugins.html), search for "Scala" in the plugins menu.)
 - Open a terminal, navigate to the directory where you want to store the TIP project.
-- Run `git clone https://github.com/cs-au-dk/TIP.git tip`
+- Run `git clone https://github.com/gcoremans/TIP.git tip`
 - In IntelliJ, click File -> New -> Project from Existing Sources..., choose your new 'tip' directory, click OK, choose 'Import project from external model', then 'sbt' and 'Next'.
 - Select a 'Project JDK' (1.8 or newer), and make sure 'builds' is enabled under 'sbt shell", 'use for' before clicking 'Finish'.
 - In the IntelliJ Project overview, move the contents of 'ideafiles' into '.idea', overwriting the existing files.

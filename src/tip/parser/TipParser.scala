@@ -144,6 +144,7 @@ class TipParser(val input: ParserInput) extends Parser with Comments {
 
   def Atom: Rule1[AExpr] = rule {
     (FunApp
+      | Hash
       | Number
       | Parens
       | PointersExpression
@@ -193,6 +194,10 @@ class TipParser(val input: ParserInput) extends Parser with Comments {
 
   def DeRef: Rule1[AUnaryOp] = rule {
     push(cursor) ~ "*" ~ Atom ~> ((cur: Int, e: AExpr) => AUnaryOp(DerefOp, e, cur))
+  }
+
+  def Hash: Rule1[AUnaryOp] = rule {
+    push(cursor) ~ "#" ~ Atom ~> ((cur: Int, e: AExpr) => AUnaryOp(HashOp, e, cur))
   }
 
   def Program: Rule1[AProgram] = rule {

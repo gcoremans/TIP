@@ -43,6 +43,10 @@ case object DerefOp extends Operator with UnaryOperator {
   override def toString: String = "*"
 }
 
+case object HashOp extends Operator with UnaryOperator {
+  override def toString: String = "#"
+}
+
 /**
   * AST node.
   *

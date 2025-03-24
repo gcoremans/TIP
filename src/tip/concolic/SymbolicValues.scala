@@ -84,6 +84,9 @@ object SymbolicValues extends ValueSpecification {
     case _ => ???
   }
 
+  // TODO: Symbolic interpretation of hash
+  def hash(i: IntValue) = ???
+
   def mkFun(f: AFunDeclaration): FunValue = ConcreteFunValue(f)
 
   def mkRecord(fields: Map[String, EValue]) = ConcreteRecordValue(fields)

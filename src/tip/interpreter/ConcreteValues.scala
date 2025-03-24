@@ -80,6 +80,14 @@ object ConcreteValues extends ValueSpecification {
     case _ => ???
   }
 
+  def hash(i: IntValue): IntValue = i match {
+    case i: ConcreteIntValue => ConcreteIntValue(
+      (((((i.i * 7919) % 2053) ^ ((i.i * 7907) % 2039) ^ ((i.i * 7901) % 2063)) * 7879) % 2027)
+        ^ (((((i.i * 7919) % 2039) ^ ((i.i * 7907) % 2063) ^ ((i.i * 7901) % 2053)) * 7877) % 2029)
+    )
+    case _ => ???
+  }
+
   def mkFun(f: AFunDeclaration): FunValue = ConcreteFunValue(f)
 
   def mkRecord(fields: Map[String, EValue]) = ConcreteRecordValue(fields)

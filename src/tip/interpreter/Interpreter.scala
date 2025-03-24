@@ -285,6 +285,12 @@ abstract class Interpreter(program: AProgram)(implicit declData: DeclarationData
                 s1.getOrElse(crv, errorUninitializedLocation(exp.loc, s1))
               case _ => errorDerefNotPointer(exp.loc, sub, s1)
             }
+          case HashOp =>
+            sub match {
+              case v: IntValue =>
+                spec.hash(v)
+              case _ => throw new ExecutionError(s"Unable to hash non-integer value ${exp.loc.toStringLong}", store)
+            }
         }
         (cval, s1)
       case AInput(_) =>

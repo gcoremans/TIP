@@ -122,6 +122,11 @@ trait ValueSpecification {
   def minusInt(x: IntValue, y: IntValue): IntValue
 
   /**
+   * The hash operator on integer values
+   */
+  def hash(i: IntValue): IntValue
+
+  /**
     * Makes a function value from a function declaration in the program code.
     */
   def mkFun(fun: AFunDeclaration): FunValue

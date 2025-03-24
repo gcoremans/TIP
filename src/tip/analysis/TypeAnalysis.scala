@@ -122,6 +122,7 @@ class TypeAnalysis(program: AProgram)(implicit declData: DeclarationData) extend
       case un: AUnaryOp =>
         un.operator match {
           case DerefOp => ??? // <--- Complete here
+          case HashOp => ???
         }
       case alloc: AAlloc => ??? // <--- Complete here
       case ref: AVarRef => ??? // <--- Complete here

@@ -24,6 +24,11 @@ trait DepthFirstAstVisitor[A] {
         visit(bin.right, arg)
       case un: AUnaryOp =>
         visit(un.subexp, arg)
+      case arr: AArrOp =>
+        arr.elems.foreach(visit(_, arg))
+      case arracc: AArrAcc =>
+        visit(arracc.arr, arg)
+        visit(arracc.idx, arg)
       case as: AAssignStmt =>
         as.left match {
           case id: AIdentifier =>
@@ -34,6 +39,9 @@ trait DepthFirstAstVisitor[A] {
             visit(dfw.id, arg)
           case ifw: AIndirectFieldWrite =>
             visit(ifw.exp, arg)
+          case arracc: AArrAcc =>
+            visit(arracc.arr, arg)
+            visit(arracc.idx, arg)
         }
         visit(as.right, arg)
       case block: ABlock =>

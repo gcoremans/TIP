@@ -1,6 +1,7 @@
 package tip.concolic
 
 import tip.ast._
+import tip.ast.AstOps._
 import tip.ast.AstNodeData.DeclarationData
 import tip.interpreter.Interpreter
 import SMTSolver.Symbol

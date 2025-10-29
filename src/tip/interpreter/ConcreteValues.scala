@@ -44,6 +44,12 @@ object ConcreteValues extends ValueSpecification {
 
   val returnLoc = ConcreteReferenceValue(0)
 
+  /**
+    * Array value.
+    */
+  case class ConcreteArrValue(content: Vector[ReferenceValue]) extends ArrValue
+  def arrayValue(content: Vector[ReferenceValue]) = ConcreteArrValue(content)
+    
   def newLoc(): ReferenceValue = { lastLoc += 1; ConcreteReferenceValue(lastLoc) }
 
   def constInt(i: Int): IntValue = ConcreteIntValue(i)

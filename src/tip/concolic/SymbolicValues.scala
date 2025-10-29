@@ -1,6 +1,7 @@
 package tip.concolic
 
 import tip.ast._
+import tip.ast.AstOps._
 import tip.interpreter.ValueSpecification
 
 object SymbolicValues extends ValueSpecification {
@@ -34,6 +35,12 @@ object SymbolicValues extends ValueSpecification {
   val nullValue = ConcreteNullValue()
 
   val returnLoc = ConcreteReferenceValue(0)
+
+  /**
+    * Array value.
+    */
+  case class ConcreteArrayValue(content: Vector[ReferenceValue]) extends ArrValue
+  def arrayValue(content: Vector[ReferenceValue]) = ???
 
   /**
     * Creates a new reference

@@ -67,6 +67,15 @@ trait ValueSpecification {
   }
 
   /**
+    * Array values
+    */
+  trait ArrValue extends EValue {
+    val content: Vector[ReferenceValue]
+  }
+
+  def arrayValue(content: Vector[ReferenceValue]): ArrValue
+  
+  /**
     * The null value.
     */
   def nullValue: NullValue

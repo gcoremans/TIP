@@ -3,6 +3,7 @@ package tip.concolic
 import tip.ast.AstNodeData._
 import tip.ast.AProgram
 import tip.util.Log
+import tip.ast.AstOps._
 import SMTSolver.Symbol
 
 class ConcolicEngine(val program: AProgram)(implicit declData: DeclarationData) extends SymbolicInterpreter(program) {
@@ -46,7 +47,7 @@ class ConcolicEngine(val program: AProgram)(implicit declData: DeclarationData) 
     }
   }
 
-  def test(budget: Int = 20): Unit = {
+  def test(budget: Int = 200): Unit = {
     val root = new ExecutionTreeRoot()
 
     var runs = 0

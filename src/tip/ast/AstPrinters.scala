@@ -82,6 +82,8 @@ object AstPrinters {
               s"var ${declIds.map(_.print(printer)).mkString(",")};"
             case AProgram(funs, _) =>
               s"${funs.map(_.print(printer)).mkString("\n\n")}"
+            case arrop: AArrOp => arrop.toString()
+            case arracc: AArrAcc => arracc.toString()
           }
       })
   }

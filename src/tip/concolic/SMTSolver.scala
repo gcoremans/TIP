@@ -1,6 +1,7 @@
 package tip.concolic
 
 import tip.ast._
+import tip.ast.AstOps._
 import smtlib.Interpreter
 import smtlib.interpreters.Z3Interpreter
 import smtlib.parser.Parser

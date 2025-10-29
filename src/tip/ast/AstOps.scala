@@ -171,6 +171,22 @@ object AstOps {
       expFinder.visit(n, ())
       fields.toSet
     }
+
+    /**
+      * Returns the set of variables which have a literal array assigned to them
+      */
+    def arrayAssignments: Set[(AIdentifier,AArrOp)] = {
+      var arrays = mutable.Set[(AIdentifier,AArrOp)]()
+      new DepthFirstAstVisitor[Unit] {
+        override def visit(node: AstNode, arg: Unit): Unit =
+          node match {
+            case AAssignStmt(id: AIdentifier, arr: AArrOp, _) =>
+              arrays.add((id, arr))
+            case _ => visitChildren(node, ())
+          }
+      }.visit(n, ())
+      arrays.toSet
+    }
   }
 
   /**

@@ -78,7 +78,7 @@ class TipParser(val input: ParserInput) extends Parser with Comments {
   }
 
   def AssignableExpression: Rule1[Assignable] = rule {
-    (DirectFieldWrite | IndirectFieldWrite | Identifier | DerefWrite) ~> { x: Assignable =>
+    (ArrAccess | DirectFieldWrite | IndirectFieldWrite | Identifier | DerefWrite) ~> { x: Assignable =>
       x
     }
   }
@@ -143,13 +143,26 @@ class TipParser(val input: ParserInput) extends Parser with Comments {
   }
 
   def Atom: Rule1[AExpr] = rule {
+    (ArrAccess | NotArrAccess)
+  }
+
+  def ArrAccess: Rule1[AArrAcc] = rule {
+    NotArrAccess ~ oneOrMore(push(cursor) ~ "[" ~ Expression ~ "]" ~> ((e1: AExpr, cur: Int, e2: AExpr) => AArrAcc(e1, e2, cur)))
+  }
+
+  def NotArrAccess: Rule1[AExpr] = rule {
     (FunApp
       | Number
       | Parens
       | PointersExpression
       | push(cursor) ~ wspStr(LanguageKeywords.KINPUT) ~> ((cur: Int) => AInput(cur))
       | Identifier
-      | Record)
+      | Record
+      | ArrOperation)
+  }
+
+  def ArrOperation: Rule1[AExpr] = rule {
+    push(cursor) ~ "{" ~ zeroOrMore(Expression).separatedBy(",") ~ "}" ~> ((cur: Int, elems: immutable.Seq[AExpr]) => AArrOp(elems, cur))
   }
 
   def Parens = rule {

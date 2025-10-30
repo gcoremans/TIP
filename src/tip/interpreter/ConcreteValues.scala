@@ -48,7 +48,9 @@ object ConcreteValues extends ValueSpecification {
     * Array value.
     */
   case class ConcreteArrValue(content: Vector[ReferenceValue]) extends ArrValue
-  def arrayValue(content: Vector[ReferenceValue]) = ConcreteArrValue(content)
+  def arrayValue(refs: Vector[ReferenceValue], vals: Vector[IntValue]): ArrValue = ConcreteArrValue(refs)
+  def arraySelect(arr: ArrValue, idx: IntValue, v: IntValue): IntValue = v
+  def arrayStore(arr: ArrValue, idx: IntValue, v: IntValue): ArrValue = arr
     
   def newLoc(): ReferenceValue = { lastLoc += 1; ConcreteReferenceValue(lastLoc) }
 

@@ -34,6 +34,12 @@ object SMTSolver {
           s"(${opToSexp(op)} ${expToSexp(left)} ${expToSexp(right)})"
         case n: ANumber => n.value.toString
         case n: Symbol => n.name.toString
+        case AArrOp(elems, _) =>
+          ??? // <= COMPLETE HERE
+        case AArrAcc(arr, idx, _) =>
+          ??? // <= COMPLETE HERE
+        case AArrUpdate(arr, idx, v, _) =>
+          ??? // <= COMPLETE HERE
         case _ => exp.toString
       }
 

@@ -39,8 +39,18 @@ object SymbolicValues extends ValueSpecification {
   /**
     * Array value.
     */
-  case class ConcreteArrayValue(content: Vector[ReferenceValue]) extends ArrValue
-  def arrayValue(content: Vector[ReferenceValue]) = ???
+  case class SymbArrValue(content: Vector[ReferenceValue], symbolic: AExpr) extends ArrValue
+  def arrayValue(refs: Vector[ReferenceValue], vals: Vector[IntValue]): ArrValue = ??? // <= COMPLETE HERE
+  def arraySelect(arr: ArrValue, idx: IntValue, v: IntValue): IntValue = {
+    (arr, idx) match {
+      case (arr: SymbArrValue, idx: SymbIntValue) => ??? // <= COMPLETE HERE
+    }
+  }
+  def arrayStore(arr: ArrValue, idx: IntValue, v: IntValue): ArrValue = {
+    (arr, idx, v) match {
+      case (arr: SymbArrValue, idx: SymbIntValue, v: SymbIntValue) => ??? // <= COMPLETE HERE
+    }
+  }
 
   /**
     * Creates a new reference

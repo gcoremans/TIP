@@ -137,6 +137,14 @@ abstract class Interpreter(program: AProgram)(implicit declData: DeclarationData
         val (lv, s1) = semeref(left, env, store)
         val (rv, s2) = semeright(right, env, s1)
         (env, s2 + (lv -> rv))
+      case AAssignStmt(left: AArrAcc, right: AExpr, _) =>
+        val (idxv, s1) = semeright(left.idx, env, store)
+        val (arrv, s2) = semeright(left.arr, env, s1)
+        val (rhsv, s3) = semeright(right, env, s2)
+        (idxv, arrv, left.arr, rhsv) match {
+          case (idxv: IntValue, arrv: ArrValue, id: AIdentifier, rhsv: IntValue) =>
+            ??? // <= COMPLETE HERE
+        }
       case block: ABlock =>
         block.body.foldLeft((env, store))((acc: (Env, Store), stm: AStmt) => semc(stm, acc._1, acc._2))
       case AIfStmt(guard, ifBranch, elseBranch, loc) =>
@@ -204,19 +212,6 @@ abstract class Interpreter(program: AProgram)(implicit declData: DeclarationData
           case (pref: ReferenceValue, s1) => (pref, s1)
           case (_: NullValue, s1) => errorNullDereference(loc, s1)
           case (x, s1) => errorDerefNotPointer(loc, x, s1)
-        }
-      case AArrAcc(arr, idx, loc) =>
-        /** Accessing an array (z[i]) on the left-hand side of an expression consists of first evaluating
-            the index (i) which will be accessed, then evaluating the array expression (z), and accessing
-            the correct value in the array. Note that this code doesn't perform any check, which would be
-            necessary for a cleaner implementation, to prevent accessing an array at non-integer indices
-            (e.g. z[z]), or accessing a non-array (e.g., i[z]) */
-        semeright(idx, env, store) match {
-          case (i: IntValue, s1) =>
-            semeright(arr, env, s1) match {
-              case (arr: ArrValue, s2) =>
-                (arr.content(i.i), s2)
-            }
         }
       case _ => ???
     }
@@ -328,23 +323,20 @@ abstract class Interpreter(program: AProgram)(implicit declData: DeclarationData
         val l = env(id.declaration)
         (store.getOrElse(l, errorUninitializedLocation(exp.loc, store)), store)
       case AArrOp(elems, loc) =>
-        /** To create an array (e.g., {1,2,3}), we evaluate each of the array elements (e.g., 1, 2 and 3)
-            using semeright, create a new location to hold the evaluated value, extend the store so that
-            the newly created location points to the resulting value, and correctly propagate the store.
-            We then create an array value containing the created references, and include the resulting
-            store in the return value. */
-        val res = elems.foldLeft((List[ReferenceValue](), store))((acc: (List[ReferenceValue], Store), e: AExpr) => {
-          val (v, s1) = semeright(e, env, acc._2)
+        val (refs, vals, newStore) = elems.foldLeft((List[ReferenceValue](), List[IntValue](), store))((acc: (List[ReferenceValue], List[IntValue], Store), e: AExpr) => {
+          val (v, s1) = semeright(e, env, acc._3)
           val ref = spec.newLoc()
-          (ref :: acc._1, s1 + ((ref -> v)))
+          v match {
+            case (i: IntValue) => (ref :: acc._1, i :: acc._2, s1 + ((ref -> i)))
+          }
         })
-        (spec.arrayValue(res._1.reverse.toVector), res._2)
-      case arrAcc: AArrAcc =>
-        /** An array access on the right-hand side of an expression does not have the same semantics as on
-            the left-hand side. z[1] on the rhs results in the *value* contained in z[1]. We use semeref to
-            get the reference held in z[1], and dereference it using the store */
-        semeref(arrAcc, env, store) match {
-          case (ref, s1) => (s1(ref), s1)
+        (spec.arrayValue(refs.reverse.toVector, vals.reverse.toVector), newStore)
+      case AArrAcc(arr, idx, _) =>
+        val (idxv, s1) = semeright(idx, env, store)
+        val (arrv, s2) = semeright(arr, env, s1)
+        (idxv, arrv) match {
+          case (idxv: IntValue, arrv: ArrValue) =>
+            ??? // <= COMPLETE HERE
         }
     }
 

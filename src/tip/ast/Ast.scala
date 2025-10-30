@@ -95,12 +95,16 @@ case class ARecordField(field: String, exp: AExpr, loc: Loc)
 
 case class AFieldAccess(record: AExpr, field: String, loc: Loc) extends AExpr with AAtomicExpr
 
-case class AArrOp(elems: Seq[AExpr], loc: Loc) extends AExpr with AAtomicExpr {
+case class AArrOp(elems: Seq[AExpr], loc: Loc) extends AExpr {
   override def toString: String = s"{${elems.mkString(",")}}"
 }
 
-case class AArrAcc(arr: AExpr, idx: AExpr, loc: Loc) extends AExpr with AAtomicExpr with ReferenceAssignable {
+case class AArrAcc(arr: AExpr, idx: AExpr, loc: Loc) extends AExpr with Assignable {
   override def toString: String = s"$arr[$idx]"
+}
+
+case class AArrUpdate(arr: AExpr, idx: AExpr, v: AExpr, loc: Loc) extends AExpr {
+  override def toString: String = s"$arr{$idx->$v}"
 }
 
 //////////////// Statements //////////////////////////

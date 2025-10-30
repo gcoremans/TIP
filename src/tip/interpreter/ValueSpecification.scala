@@ -73,8 +73,10 @@ trait ValueSpecification {
     val content: Vector[ReferenceValue]
   }
 
-  def arrayValue(content: Vector[ReferenceValue]): ArrValue
-  
+  def arrayValue(refs: Vector[ReferenceValue], vals: Vector[IntValue]): ArrValue
+  def arraySelect(arr: ArrValue, idx: IntValue, v: IntValue): IntValue
+  def arrayStore(arr: ArrValue, idx: IntValue, v: IntValue): ArrValue
+
   /**
     * The null value.
     */
